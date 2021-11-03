@@ -79,6 +79,9 @@ jobs:
 
           cat >> .config <<EOF
             CONFIG_TARGET_IMAGES_GZIP=y
+            # CONFIG_VDI_IMAGES is not set
+            # CONFIG_VHDX_IMAGES is not set
+            # CONFIG_VMDK_IMAGES is not set
             CONFIG_KERNEL_BUILD_USER="OpenWrt-CI"
             CONFIG_KERNEL_BUILD_DOMAIN="Azure"
             CONFIG_TARGET_x86=y
@@ -88,6 +91,7 @@ jobs:
             CONFIG_TARGET_ARCH_PACKAGES="x86_64"
 
           # Image Options
+            # CONFIG_VMDK_IMAGES is not set
             CONFIG_TARGET_KERNEL_PARTSIZE=16
             CONFIG_TARGET_ROOTFS_PARTSIZE=256
             CONFIG_TARGET_ROOTFS_PARTNAME=""
