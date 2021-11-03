@@ -33,7 +33,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
+          repository: coolsnowwolf/lede
           ref: master
+
+      - name: List Repo Files
+        run: |
+          ls -lth
 
       - name: Space cleanup
         env:
