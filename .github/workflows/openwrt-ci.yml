@@ -309,8 +309,14 @@ jobs:
           #
           # ===============================================================
           # 
-
           sed -i 's/^[ \t]*//g' ./.config
+
+      - name: Show custom configuration
+        run: |
+          cat -n ./.config
+
+      - name: Generate final configuration
+        run: |
           make defconfig
 
       - name: Make download
