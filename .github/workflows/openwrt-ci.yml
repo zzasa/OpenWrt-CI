@@ -196,7 +196,7 @@ jobs:
             # CONFIG_PACKAGE_luci-app-cjdns is not set
             CONFIG_PACKAGE_luci-app-clamav=y
             CONFIG_PACKAGE_luci-app-commands=y
-            CONFIG_PACKAGE_luci-app-cshark=y
+            # CONFIG_PACKAGE_luci-app-cshark is not set
             CONFIG_PACKAGE_luci-app-dawn=y
             CONFIG_PACKAGE_luci-app-ddns=y
             CONFIG_PACKAGE_luci-app-diag-core=y
@@ -212,7 +212,7 @@ jobs:
             CONFIG_PACKAGE_luci-app-dump1090=y
             CONFIG_PACKAGE_luci-app-dynapoint=y
             CONFIG_PACKAGE_luci-app-e2guardian=y
-            CONFIG_PACKAGE_luci-app-easymesh=y
+            # CONFIG_PACKAGE_luci-app-easymesh is not set
             CONFIG_PACKAGE_luci-app-familycloud=y
             CONFIG_PACKAGE_luci-app-filetransfer=y
             CONFIG_PACKAGE_luci-app-firewall=y
@@ -267,7 +267,7 @@ jobs:
             CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-ng=y
             CONFIG_PACKAGE_luci-app-rp-pppoe-server=y
             CONFIG_PACKAGE_luci-app-samba=y
-            CONFIG_PACKAGE_luci-app-samba4=y
+            # CONFIG_PACKAGE_luci-app-samba4 is not set
             CONFIG_PACKAGE_luci-app-serverchan=y
             CONFIG_PACKAGE_luci-app-shadowsocks-libev=y
             CONFIG_PACKAGE_luci-app-shairplay=y
@@ -301,7 +301,7 @@ jobs:
             CONFIG_PACKAGE_luci-app-v2ray-server=y
             CONFIG_PACKAGE_luci-app-verysync=y
             CONFIG_PACKAGE_luci-app-vlmcsd=y
-            CONFIG_PACKAGE_luci-app-vnstat=y
+            # CONFIG_PACKAGE_luci-app-vnstat is not set
             CONFIG_PACKAGE_luci-app-vpnbypass=y
             CONFIG_PACKAGE_luci-app-vsftpd=y
             CONFIG_PACKAGE_luci-app-watchcat=y
