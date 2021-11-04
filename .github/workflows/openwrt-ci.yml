@@ -193,7 +193,7 @@ jobs:
             CONFIG_PACKAGE_luci-app-bmx6=y
             CONFIG_PACKAGE_luci-app-cifs-mount=y
             CONFIG_PACKAGE_luci-app-cifsd=y
-            CONFIG_PACKAGE_luci-app-cjdns=y
+            # CONFIG_PACKAGE_luci-app-cjdns is not set
             CONFIG_PACKAGE_luci-app-clamav=y
             CONFIG_PACKAGE_luci-app-commands=y
             CONFIG_PACKAGE_luci-app-cshark=y
