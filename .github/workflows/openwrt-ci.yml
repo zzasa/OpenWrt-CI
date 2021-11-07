@@ -91,16 +91,8 @@ jobs:
             CONFIG_TARGET_ARCH_PACKAGES="x86_64"
 
           # Target Images
-            CONFIG_TARGET_ROOTFS_INITRAMFS=y
-            # CONFIG_TARGET_INITRAMFS_COMPRESSION_NONE is not set
-            # CONFIG_TARGET_INITRAMFS_COMPRESSION_GZIP is not set
-            # CONFIG_TARGET_INITRAMFS_COMPRESSION_BZIP2 is not set
-            # CONFIG_TARGET_INITRAMFS_COMPRESSION_LZMA is not set
-            # CONFIG_TARGET_INITRAMFS_COMPRESSION_LZO is not set
-            CONFIG_TARGET_INITRAMFS_COMPRESSION_LZ4=y
-            # CONFIG_TARGET_INITRAMFS_COMPRESSION_XZ is not set
+            # CONFIG_TARGET_ROOTFS_INITRAMFS is not set
             CONFIG_EXTERNAL_CPIO=""
-            # CONFIG_TARGET_INITRAMFS_FORCE is not set
 
           # Image Options
             # CONFIG_VMDK_IMAGES is not set
@@ -183,23 +175,23 @@ jobs:
             CONFIG_PACKAGE_luci-app-amule=y
             CONFIG_PACKAGE_luci-app-aria2=y
             CONFIG_PACKAGE_luci-app-arpbind=y
-            CONFIG_PACKAGE_luci-app-asterisk=y
-            CONFIG_PACKAGE_luci-app-attendedsysupgrade=y
+            # CONFIG_PACKAGE_luci-app-asterisk is not set
+            # CONFIG_PACKAGE_luci-app-attendedsysupgrade is not set
             CONFIG_PACKAGE_luci-app-autoreboot=y
             CONFIG_PACKAGE_luci-app-baidupcs-web=y
             CONFIG_PACKAGE_luci-app-bcp38=y
-            CONFIG_PACKAGE_luci-app-bird1-ipv4=y
-            CONFIG_PACKAGE_luci-app-bird1-ipv6=y
-            CONFIG_PACKAGE_luci-app-bmx6=y
-            CONFIG_PACKAGE_luci-app-cifs-mount=y
-            CONFIG_PACKAGE_luci-app-cifsd=y
+            # CONFIG_PACKAGE_luci-app-bird1-ipv4 is not set
+            # CONFIG_PACKAGE_luci-app-bird1-ipv6 is not set
+            # CONFIG_PACKAGE_luci-app-bmx6 is not set
+            # CONFIG_PACKAGE_luci-app-cifs-mount is not set
+            # CONFIG_PACKAGE_luci-app-cifsd is not set
             # CONFIG_PACKAGE_luci-app-cjdns is not set
             CONFIG_PACKAGE_luci-app-clamav=y
             CONFIG_PACKAGE_luci-app-commands=y
             # CONFIG_PACKAGE_luci-app-cshark is not set
-            CONFIG_PACKAGE_luci-app-dawn=y
+            # CONFIG_PACKAGE_luci-app-dawn is not set
             CONFIG_PACKAGE_luci-app-ddns=y
-            CONFIG_PACKAGE_luci-app-diag-core=y
+            # CONFIG_PACKAGE_luci-app-diag-core is not set
             CONFIG_PACKAGE_luci-app-diskman=y
             CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs=y
             CONFIG_PACKAGE_luci-app-diskman_INCLUDE_lsblk=y
@@ -216,14 +208,14 @@ jobs:
             CONFIG_PACKAGE_luci-app-familycloud=y
             CONFIG_PACKAGE_luci-app-filetransfer=y
             CONFIG_PACKAGE_luci-app-firewall=y
-            CONFIG_PACKAGE_luci-app-frpc=y
-            CONFIG_PACKAGE_luci-app-frps=y
+            # CONFIG_PACKAGE_luci-app-frpc is not set
+            # CONFIG_PACKAGE_luci-app-frps is not set
             CONFIG_PACKAGE_luci-app-fwknopd=y
             CONFIG_PACKAGE_luci-app-go-aliyundrive-webdav=y
             CONFIG_PACKAGE_luci-app-guest-wifi=y
             CONFIG_PACKAGE_luci-app-haproxy-tcp=y
             CONFIG_PACKAGE_luci-app-hd-idle=y
-            CONFIG_PACKAGE_luci-app-hnet=y
+            # CONFIG_PACKAGE_luci-app-hnet is not set
             CONFIG_PACKAGE_luci-app-https-dns-proxy=y
             CONFIG_PACKAGE_luci-app-ipsec-vpnd=y
             CONFIG_PACKAGE_luci-app-jd-dailybonus=y
@@ -239,13 +231,13 @@ jobs:
             CONFIG_PACKAGE_luci-app-nfs=y
             CONFIG_PACKAGE_luci-app-nft-qos=y
             CONFIG_PACKAGE_luci-app-nlbwmon=y
-            CONFIG_PACKAGE_luci-app-noddos=y
+            # CONFIG_PACKAGE_luci-app-noddos is not set
             CONFIG_PACKAGE_luci-app-nps=y
             CONFIG_PACKAGE_luci-app-ntpc=y
             CONFIG_PACKAGE_luci-app-ocserv=y
-            CONFIG_PACKAGE_luci-app-olsr=y
-            CONFIG_PACKAGE_luci-app-olsr-services=y
-            CONFIG_PACKAGE_luci-app-olsr-viz=y
+            # CONFIG_PACKAGE_luci-app-olsr is not set
+            # CONFIG_PACKAGE_luci-app-olsr-services is not set
+            # CONFIG_PACKAGE_luci-app-olsr-viz is not set
             CONFIG_PACKAGE_luci-app-openvpn=y
             CONFIG_PACKAGE_luci-app-openvpn-server=y
             CONFIG_PACKAGE_luci-app-p910nd=y
@@ -265,16 +257,16 @@ jobs:
             CONFIG_PACKAGE_luci-app-rclone=y
             CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-webui=y
             CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-ng=y
-            CONFIG_PACKAGE_luci-app-rp-pppoe-server=y
+            # CONFIG_PACKAGE_luci-app-rp-pppoe-server is not set
             CONFIG_PACKAGE_luci-app-samba=y
             # CONFIG_PACKAGE_luci-app-samba4 is not set
             CONFIG_PACKAGE_luci-app-serverchan=y
             CONFIG_PACKAGE_luci-app-shadowsocks-libev=y
             CONFIG_PACKAGE_luci-app-shairplay=y
-            CONFIG_PACKAGE_luci-app-siitwizard=y
+            # CONFIG_PACKAGE_luci-app-siitwizard is not set
             CONFIG_PACKAGE_luci-app-simple-adblock=y
             CONFIG_PACKAGE_luci-app-softethervpn=y
-            CONFIG_PACKAGE_luci-app-splash=y
+            # CONFIG_PACKAGE_luci-app-splash is not set
             CONFIG_PACKAGE_luci-app-sqm=y
             CONFIG_PACKAGE_luci-app-squid=y
             CONFIG_PACKAGE_luci-app-ssrserver-python=y
@@ -307,7 +299,7 @@ jobs:
             CONFIG_PACKAGE_luci-app-watchcat=y
             CONFIG_PACKAGE_luci-app-webadmin=y
             CONFIG_PACKAGE_luci-app-wifischedule=y
-            CONFIG_PACKAGE_luci-app-wireguard=y
+            # CONFIG_PACKAGE_luci-app-wireguard is not set
             CONFIG_PACKAGE_luci-app-wol=y
             CONFIG_PACKAGE_luci-app-wrtbwmon=y
             CONFIG_PACKAGE_luci-app-xlnetacc=y
