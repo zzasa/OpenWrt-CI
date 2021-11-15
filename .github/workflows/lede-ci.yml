@@ -12,7 +12,7 @@ name: LEDE-CI
 on:
   push:
     branches: 
-      - master1
+      - master
   # schedule:
   #   - cron: 0 20 * * *
   release:
@@ -38,7 +38,11 @@ jobs:
 
       - name: List Repo Files
         run: |
+          echo "源文件列表······"
           ls -lth
+          sed -i 's/KERNEL_PATCHVER:=5.4/KERNEL_PATCHVER:=5.10/g' ./target/linux/x86/Makefile
+          echo "更改内核版本结果如下："
+          cat -n ./target/linux/x86/Makefile
 
       - name: Space cleanup
         env:
