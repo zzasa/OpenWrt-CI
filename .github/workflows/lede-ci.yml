@@ -7,12 +7,12 @@
 # <https://github.com/KFERMercer/OpenWrt-CI>
 #
 
-name: OpenWrt-CI
+name: LEDE-CI
 
 on:
   push:
     branches: 
-      - master
+      - master1
   # schedule:
   #   - cron: 0 20 * * *
   release:
@@ -22,7 +22,7 @@ jobs:
 
   build_openwrt:
 
-    name: Build OpenWrt firmware
+    name: Build LEDE firmware
 
     runs-on: ubuntu-latest
 
@@ -33,7 +33,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: openwrt/openwrt
+          repository: coolsnowwolf/lede
           ref: master
 
       - name: List Repo Files
@@ -78,7 +78,11 @@ jobs:
           # 例如:
 
           cat >> .config <<EOF
-            CONFIG_KERNEL_BUILD_USER="OpenWrt-CI"
+            CONFIG_TARGET_IMAGES_GZIP=y
+            # CONFIG_VDI_IMAGES is not set
+            # CONFIG_VHDX_IMAGES is not set
+            # CONFIG_VMDK_IMAGES is not set
+            CONFIG_KERNEL_BUILD_USER="LEDE-CI"
             CONFIG_KERNEL_BUILD_DOMAIN="Azure"
             CONFIG_TARGET_x86=y
             CONFIG_TARGET_x86_64=y
@@ -91,21 +95,15 @@ jobs:
             CONFIG_EXTERNAL_CPIO=""
 
           # Image Options
-            CONFIG_TARGET_IMAGES_GZIP=y
-            # CONFIG_ISO_IMAGES is not set
-            # CONFIG_VDI_IMAGES is not set
             # CONFIG_VMDK_IMAGES is not set
-            # CONFIG_GRUB_IMAGES is not set
-            # CONFIG_TARGET_ROOTFS_EXT4FS is not set
-            CONFIG_GRUB_EFI_IMAGES=y
-            CONFIG_TARGET_ROOTFS_SQUASHFS=y
-            CONFIG_TARGET_SQUASHFS_BLOCK_SIZE=256
-            CONFIG_TARGET_UBIFS_FREE_SPACE_FIXUP=y
-            CONFIG_TARGET_UBIFS_JOURNAL_SIZE=""
             CONFIG_TARGET_KERNEL_PARTSIZE=16
             CONFIG_TARGET_ROOTFS_PARTSIZE=256
             CONFIG_TARGET_ROOTFS_PARTNAME=""
             CONFIG_TARGET_ROOTFS_PERSIST_VAR=y
+          
+          # Extra packages
+            # CONFIG_PACKAGE_automount is not set
+            CONFIG_PACKAGE_ipv6helper=y
 
           # Firmware
             CONFIG_PACKAGE_iwlwifi-firmware-iwl6000g2=y
@@ -129,16 +127,10 @@ jobs:
             CONFIG_PACKAGE_kmod-fs-hfsplus=y
             CONFIG_PACKAGE_kmod-fs-msdos=y
             CONFIG_PACKAGE_kmod-fs-ntfs=y
+            CONFIG_PACKAGE_kmod-fs-ntfs3=y
             CONFIG_PACKAGE_kmod-fs-squashfs=y
             CONFIG_PACKAGE_kmod-fs-udf=y
             CONFIG_PACKAGE_kmod-fs-vfat=y
-            CONFIG_PACKAGE_kmod-fs-ksmbd=y
-            CONFIG_KSMBD_SMB_INSECURE_SERVER=y
-            CONFIG_PACKAGE_kmod-fs-nfs=y
-            CONFIG_PACKAGE_kmod-fs-nfs-common=y
-            CONFIG_PACKAGE_kmod-fs-nfs-common-rpcsec=y
-            CONFIG_PACKAGE_kmod-fs-nfsd=y
-            CONFIG_PACKAGE_kmod-fs-xfs=y
 
           # Native Language Support
             CONFIG_PACKAGE_kmod-nls-cp936=y
@@ -148,17 +140,11 @@ jobs:
             CONFIG_PACKAGE_kmod-e1000=y
             CONFIG_PACKAGE_kmod-e1000e=y
             CONFIG_PACKAGE_kmod-vmxnet3=y
-            CONFIG_TARGET_PREINIT_IP="192.168.1.2"
-            CONFIG_TARGET_PREINIT_NETMASK="255.255.255.0"
-            CONFIG_TARGET_PREINIT_BROADCAST="192.168.1.255"
 
           # USB Support
             CONFIG_PACKAGE_kmod-usb-net-rtl8150=y
             CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
-            CONFIG_PACKAGE_kmod-usb-storage=y
-            CONFIG_PACKAGE_kmod-usb-storage-extras=y
-            CONFIG_PACKAGE_kmod-usb-storage-uas=y
-            CONFIG_PACKAGE_kmod-usb-xhci-hcd=y
+            CONFIG_PACKAGE_kmod-usb-net-rtl8152-vendor=m
             CONFIG_PACKAGE_kmod-usb2=y
             CONFIG_PACKAGE_kmod-usb3=y
 
@@ -169,134 +155,161 @@ jobs:
           # Wireless Drivers
             CONFIG_PACKAGE_kmod-iwlwifi=y
             CONFIG_PACKAGE_kmod-rtw88=y
-          
-          # Base system
-            CONFIG_PACKAGE_block-mount=y
-
-          # Disc
-            CONFIG_PACKAGE_blkid=y
-            CONFIG_PACKAGE_cfdisk=y
-            CONFIG_PACKAGE_fdisk=y
-            CONFIG_PACKAGE_lsblk=y
 
           # LuCI
             CONFIG_PACKAGE_luci=y
-            CONFIG_PACKAGE_luci-lib-docker=y
             CONFIG_PACKAGE_luci-base=y
-            CONFIG_LUCI_JSMIN=y
-            CONFIG_LUCI_CSSTIDY=y
-            CONFIG_LUCI_LANG_zh_Hans=y
+            CONFIG_LUCI_LANG_zh-cn=y
             CONFIG_PACKAGE_luci-compat=y
             CONFIG_PACKAGE_luci-mod-admin-full=y
-            CONFIG_PACKAGE_luci-mod-network=y
-            CONFIG_PACKAGE_luci-mod-status=y
-            CONFIG_PACKAGE_luci-mod-system=y
+            CONFIG_PACKAGE_luci-newapi=y
 
           # Applications
-            CONFIG_PACKAGE_luci-app-acl=y
-            # CONFIG_PACKAGE_luci-app-acme is not set
+            CONFIG_PACKAGE_luci-app-accesscontrol=y
             CONFIG_PACKAGE_luci-app-adblock=y
+            CONFIG_PACKAGE_luci-app-adbyby-plus=y
             CONFIG_PACKAGE_luci-app-advanced-reboot=y
-            # CONFIG_PACKAGE_luci-app-ahcp is not set
+            CONFIG_PACKAGE_luci-app-ahcp=y
+            CONFIG_PACKAGE_luci-app-airplay2=y
+            CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
+            CONFIG_PACKAGE_luci-app-amule=y
             CONFIG_PACKAGE_luci-app-aria2=y
-            CONFIG_PACKAGE_luci-app-attendedsysupgrade=y
-            # CONFIG_PACKAGE_luci-app-babeld is not set
-            # CONFIG_PACKAGE_luci-app-banip is not set
-            # CONFIG_PACKAGE_luci-app-bcp38 is not set
+            CONFIG_PACKAGE_luci-app-arpbind=y
+            # CONFIG_PACKAGE_luci-app-asterisk is not set
+            # CONFIG_PACKAGE_luci-app-attendedsysupgrade is not set
+            CONFIG_PACKAGE_luci-app-autoreboot=y
+            CONFIG_PACKAGE_luci-app-baidupcs-web=y
+            CONFIG_PACKAGE_luci-app-bcp38=y
             # CONFIG_PACKAGE_luci-app-bird1-ipv4 is not set
             # CONFIG_PACKAGE_luci-app-bird1-ipv6 is not set
             # CONFIG_PACKAGE_luci-app-bmx6 is not set
-            # CONFIG_PACKAGE_luci-app-bmx7 is not set
+            # CONFIG_PACKAGE_luci-app-cifs-mount is not set
+            # CONFIG_PACKAGE_luci-app-cifsd is not set
             # CONFIG_PACKAGE_luci-app-cjdns is not set
-            # CONFIG_PACKAGE_luci-app-clamav is not set
+            CONFIG_PACKAGE_luci-app-clamav=y
             CONFIG_PACKAGE_luci-app-commands=y
             # CONFIG_PACKAGE_luci-app-cshark is not set
             # CONFIG_PACKAGE_luci-app-dawn is not set
-            # CONFIG_PACKAGE_luci-app-dcwapd is not set
             CONFIG_PACKAGE_luci-app-ddns=y
-            CONFIG_PACKAGE_luci-app-diag-core=y
+            # CONFIG_PACKAGE_luci-app-diag-core is not set
+            CONFIG_PACKAGE_luci-app-diskman=y
+            CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs=y
+            CONFIG_PACKAGE_luci-app-diskman_INCLUDE_lsblk=y
+            CONFIG_PACKAGE_luci-app-diskman_INCLUDE_mdadm=y
+            CONFIG_PACKAGE_luci-app-diskman_INCLUDE_kmod_md_raid456=y
+            CONFIG_PACKAGE_luci-app-diskman_INCLUDE_kmod_md_linear=y
             CONFIG_PACKAGE_luci-app-dnscrypt-proxy=y
-            CONFIG_PACKAGE_luci-app-dockerman=y
-            # CONFIG_PACKAGE_luci-app-dump1090 is not set
-            # CONFIG_PACKAGE_luci-app-dynapoint is not set
-            # CONFIG_PACKAGE_luci-app-eoip is not set
-            # CONFIG_PACKAGE_luci-app-example is not set
+            CONFIG_PACKAGE_luci-app-dnsforwarder=y
+            CONFIG_PACKAGE_luci-app-docker=y
+            CONFIG_PACKAGE_luci-app-dump1090=y
+            CONFIG_PACKAGE_luci-app-dynapoint=y
+            CONFIG_PACKAGE_luci-app-e2guardian=y
+            # CONFIG_PACKAGE_luci-app-easymesh is not set
+            CONFIG_PACKAGE_luci-app-familycloud=y
+            CONFIG_PACKAGE_luci-app-filetransfer=y
             CONFIG_PACKAGE_luci-app-firewall=y
             # CONFIG_PACKAGE_luci-app-frpc is not set
             # CONFIG_PACKAGE_luci-app-frps is not set
-            # CONFIG_PACKAGE_luci-app-fwknopd is not set
-            # CONFIG_PACKAGE_luci-app-hd-idle is not set
+            CONFIG_PACKAGE_luci-app-fwknopd=y
+            CONFIG_PACKAGE_luci-app-go-aliyundrive-webdav=y
+            CONFIG_PACKAGE_luci-app-guest-wifi=y
+            CONFIG_PACKAGE_luci-app-haproxy-tcp=y
+            CONFIG_PACKAGE_luci-app-hd-idle=y
             # CONFIG_PACKAGE_luci-app-hnet is not set
             CONFIG_PACKAGE_luci-app-https-dns-proxy=y
-            # CONFIG_PACKAGE_luci-app-ksmbd is not set
-            # CONFIG_PACKAGE_luci-app-ledtrig-rssi is not set
-            # CONFIG_PACKAGE_luci-app-ledtrig-switch is not set
-            # CONFIG_PACKAGE_luci-app-ledtrig-usbport is not set
-            # CONFIG_PACKAGE_luci-app-lxc is not set
-            # CONFIG_PACKAGE_luci-app-minidlna is not set
-            # CONFIG_PACKAGE_luci-app-mjpg-streamer is not set
-            # CONFIG_PACKAGE_luci-app-mwan3 is not set
-            # CONFIG_PACKAGE_luci-app-nextdns is not set
+            CONFIG_PACKAGE_luci-app-ipsec-vpnd=y
+            CONFIG_PACKAGE_luci-app-jd-dailybonus=y
+            CONFIG_PACKAGE_luci-app-kodexplorer=y
+            CONFIG_PACKAGE_luci-app-lxc=y
+            CONFIG_PACKAGE_luci-app-minidlna=y
+            CONFIG_PACKAGE_luci-app-mjpg-streamer=y
+            CONFIG_PACKAGE_luci-app-music-remote-center=y
+            CONFIG_PACKAGE_luci-app-mwan3=y
+            CONFIG_PACKAGE_luci-app-mwan3helper=y
+            CONFIG_PACKAGE_luci-app-n2n_v2=y
+            CONFIG_PACKAGE_luci-app-netdata=y
+            CONFIG_PACKAGE_luci-app-nfs=y
             CONFIG_PACKAGE_luci-app-nft-qos=y
-            # CONFIG_PACKAGE_luci-app-nlbwmon is not set
-            # CONFIG_PACKAGE_luci-app-ntpc is not set
-            # CONFIG_PACKAGE_luci-app-nut is not set
-            # CONFIG_PACKAGE_luci-app-ocserv is not set
+            CONFIG_PACKAGE_luci-app-nlbwmon=y
+            # CONFIG_PACKAGE_luci-app-noddos is not set
+            CONFIG_PACKAGE_luci-app-nps=y
+            CONFIG_PACKAGE_luci-app-ntpc=y
+            CONFIG_PACKAGE_luci-app-ocserv=y
             # CONFIG_PACKAGE_luci-app-olsr is not set
             # CONFIG_PACKAGE_luci-app-olsr-services is not set
             # CONFIG_PACKAGE_luci-app-olsr-viz is not set
-            # CONFIG_PACKAGE_luci-app-omcproxy is not set
-            # CONFIG_PACKAGE_luci-app-openvpn is not set
-            CONFIG_PACKAGE_luci-app-opkg=y
-            # CONFIG_PACKAGE_luci-app-p910nd is not set
-            # CONFIG_PACKAGE_luci-app-pagekitec is not set
-            # CONFIG_PACKAGE_luci-app-polipo is not set
-            # CONFIG_PACKAGE_luci-app-privoxy is not set
+            CONFIG_PACKAGE_luci-app-openvpn=y
+            CONFIG_PACKAGE_luci-app-openvpn-server=y
+            CONFIG_PACKAGE_luci-app-p910nd=y
+            CONFIG_PACKAGE_luci-app-pagekitec=y
+            CONFIG_PACKAGE_luci-app-polipo=y
+            CONFIG_PACKAGE_luci-app-pppoe-relay=y
+            CONFIG_PACKAGE_luci-app-pptp-server=y
+            CONFIG_PACKAGE_luci-app-privoxy=y
+            CONFIG_PACKAGE_luci-app-ps3netsrv=y
+            CONFIG_PACKAGE_luci-app-pushbot=y
+            CONFIG_PACKAGE_luci-app-qbittorrent=y
+            CONFIG_PACKAGE_luci-app-qbittorrent_static=y
+            # CONFIG_PACKAGE_luci-app-qbittorrent_dynamic is not set
             CONFIG_PACKAGE_luci-app-qos=y
-            # CONFIG_PACKAGE_luci-app-radicale is not set
-            # CONFIG_PACKAGE_luci-app-radicale2 is not set
+            CONFIG_PACKAGE_luci-app-radicale=y
+            CONFIG_PACKAGE_luci-app-ramfree=y
+            CONFIG_PACKAGE_luci-app-rclone=y
+            CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-webui=y
+            CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-ng=y
             # CONFIG_PACKAGE_luci-app-rp-pppoe-server is not set
-            CONFIG_PACKAGE_luci-app-samba4=y
-            # CONFIG_PACKAGE_luci-app-ser2net is not set
-            # CONFIG_PACKAGE_luci-app-shadowsocks-libev is not set
-            # CONFIG_PACKAGE_luci-app-shairplay is not set
+            CONFIG_PACKAGE_luci-app-samba=y
+            # CONFIG_PACKAGE_luci-app-samba4 is not set
+            CONFIG_PACKAGE_luci-app-serverchan=y
+            CONFIG_PACKAGE_luci-app-shadowsocks-libev=y
+            CONFIG_PACKAGE_luci-app-shairplay=y
             # CONFIG_PACKAGE_luci-app-siitwizard is not set
             CONFIG_PACKAGE_luci-app-simple-adblock=y
-            # CONFIG_PACKAGE_luci-app-smartdns is not set
-            # CONFIG_PACKAGE_luci-app-snmpd is not set
-            # CONFIG_PACKAGE_luci-app-softether is not set
+            CONFIG_PACKAGE_luci-app-softethervpn=y
             # CONFIG_PACKAGE_luci-app-splash is not set
             CONFIG_PACKAGE_luci-app-sqm=y
-            # CONFIG_PACKAGE_luci-app-squid is not set
+            CONFIG_PACKAGE_luci-app-squid=y
+            CONFIG_PACKAGE_luci-app-ssrserver-python=y
             CONFIG_PACKAGE_luci-app-statistics=y
-            # CONFIG_PACKAGE_luci-app-tinyproxy is not set
+            CONFIG_PACKAGE_luci-app-syncdial=y
+            CONFIG_PACKAGE_luci-app-tinyproxy=y
             CONFIG_PACKAGE_luci-app-transmission=y
-            # CONFIG_PACKAGE_luci-app-travelmate is not set
-            # CONFIG_PACKAGE_luci-app-ttyd is not set
-            # CONFIG_PACKAGE_luci-app-udpxy is not set
-            # CONFIG_PACKAGE_luci-app-uhttpd is not set
-            # CONFIG_PACKAGE_luci-app-unbound is not set
+            CONFIG_PACKAGE_luci-app-travelmate=y
+            CONFIG_PACKAGE_luci-app-ttyd=y
+            CONFIG_PACKAGE_luci-app-turboacc=y
+            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE=y
+            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_BBR_CCA=y
+            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_DNSFORWARDER=y
+            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_DNSPROXY=y
+            CONFIG_PACKAGE_luci-app-udpxy=y
+            CONFIG_PACKAGE_luci-app-uhttpd=y
+            CONFIG_PACKAGE_luci-app-unblockmusic=y
+            CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_Go=y
+            CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_NodeJS=y
+            CONFIG_PACKAGE_luci-app-unbound=y
             CONFIG_PACKAGE_luci-app-upnp=y
+            CONFIG_PACKAGE_luci-app-usb-printer=y
+            CONFIG_PACKAGE_luci-app-uugamebooster=y
+            CONFIG_PACKAGE_luci-app-v2ray-server=y
+            CONFIG_PACKAGE_luci-app-verysync=y
+            CONFIG_PACKAGE_luci-app-vlmcsd=y
             # CONFIG_PACKAGE_luci-app-vnstat is not set
-            # CONFIG_PACKAGE_luci-app-vnstat2 is not set
-            # CONFIG_PACKAGE_luci-app-vpn-policy-routing is not set
-            # CONFIG_PACKAGE_luci-app-vpnbypass is not set
+            CONFIG_PACKAGE_luci-app-vpnbypass=y
+            CONFIG_PACKAGE_luci-app-vsftpd=y
             CONFIG_PACKAGE_luci-app-watchcat=y
-            # CONFIG_PACKAGE_luci-app-wifischedule is not set
+            CONFIG_PACKAGE_luci-app-webadmin=y
+            CONFIG_PACKAGE_luci-app-wifischedule=y
             # CONFIG_PACKAGE_luci-app-wireguard is not set
-            # CONFIG_PACKAGE_luci-app-wol is not set
-            CONFIG_PACKAGE_luci-app-xinetd=y
-            # CONFIG_PACKAGE_luci-app-yggdrasil is not set
+            CONFIG_PACKAGE_luci-app-wol=y
+            CONFIG_PACKAGE_luci-app-wrtbwmon=y
+            CONFIG_PACKAGE_luci-app-xlnetacc=y
+            CONFIG_PACKAGE_luci-app-zerotier=y
 
           # Themes
+            CONFIG_PACKAGE_luci-theme-argon=y
             CONFIG_PACKAGE_luci-theme-bootstrap=y
             CONFIG_PACKAGE_luci-theme-material=y
-            CONFIG_PACKAGE_luci-theme-openwrt=y
-            CONFIG_PACKAGE_luci-theme-openwrt-2020=y
-
-          # Protocols
-            CONFIG_PACKAGE_luci-proto-ipv6=y
-            CONFIG_PACKAGE_luci-proto-ppp=y
+            CONFIG_PACKAGE_luci-theme-netgear=y
           EOF
 
           #
@@ -346,19 +359,19 @@ jobs:
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_buildinfo
+          name: LEDE_buildinfo
           path: ./artifact/buildinfo/
 
       - name: Deliver package
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_package
+          name: LEDE_package
           path: ./artifact/package/
 
       - name: Deliver firmware
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_firmware
+          name: LEDE_firmware
           path: ./bin/targets/
 
       - name: Upload release asset
