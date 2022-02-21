@@ -12,7 +12,7 @@ name: LEDE-CI
 on:
   push:
     branches: 
-      - master1
+      - master
   # schedule:
   #   - cron: 0 20 * * *
   release:
@@ -321,6 +321,28 @@ jobs:
             CONFIG_PACKAGE_luci-theme-bootstrap=y
             CONFIG_PACKAGE_luci-theme-material=y
             CONFIG_PACKAGE_luci-theme-netgear=y
+
+          # DPDK
+            # CONFIG_GDB is not set
+            CONFIG_USE_GLIBC=y
+            CONFIG_SSP_SUPPORT=y
+            CONFIG_BINUTILS_VERSION_2_34=y
+            CONFIG_BINUTILS_VERSION="2.34"
+            CONFIG_GCC_VERSION="8.4.0"
+            # CONFIG_GCC_USE_IREMAP is not set
+            CONFIG_LIBC="gCONFIG_LIBC="glibc"libc"
+            CONFIG_TARGET_SUFFIX="gnu"
+            # CONFIG_IB is not set
+            CONFIG_SDK=y
+            CONFIG_VFIO_IOMMU_TYPE1=y
+            CONFIG_VFIO_VIRQFD=y
+            CONFIG_VFIO=y
+            CONFIG_VFIO_NOIOMMU=y
+            CONFIG_VFIO_PCI=y
+            CONFIG_VFIO_PCI_MMAP=y
+            CONFIG_HUGETLBFS=y
+            CONFIG_HUGETLB_PAGE=y
+            CONFIG_PROC_PAGE_MONITOR=y
           EOF
 
           #
