@@ -40,9 +40,9 @@ jobs:
         run: |
           echo "源文件列表······"
           ls -lth
-          # sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.15/g' ./target/linux/x86/Makefile
+          # sed -i 's/KERNEL_PATCHVER:=5.4/KERNEL_PATCHVER:=5.10/g' ./target/linux/ramips/Makefile
           echo "更改内核版本结果如下："
-          cat -n ./target/linux/x86/Makefile
+          cat -n ./target/linux/ramips/Makefile
 
       - name: Space cleanup
         env:
@@ -101,7 +101,7 @@ jobs:
             CONFIG_TARGET_ARCH_PACKAGES="mipsel_24kc"
             CONFIG_DEFAULT_TARGET_OPTIMIZATION="-Os -pipe -mno-branch-likely -mips32r2 -mtune=24kc"
             CONFIG_CPU_TYPE="24kc"
-            CONFIG_LINUX_5_10=y
+            # CONFIG_LINUX_5_10=y
             CONFIG_AUDIO_SUPPORT=y
             CONFIG_GPIO_SUPPORT=y
             CONFIG_PCI_SUPPORT=y
