@@ -12,7 +12,7 @@ name: LEDE-CI
 on:
   push:
     branches: 
-      - master1
+      - master
   # schedule:
   #   - cron: 0 20 * * *
   release:
