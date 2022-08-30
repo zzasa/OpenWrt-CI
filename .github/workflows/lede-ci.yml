@@ -12,7 +12,7 @@ name: LEDE-CI
 on:
   push:
     branches: 
-      - master1
+      - master
   # schedule:
   #   - cron: 0 20 * * *
   release:
@@ -58,7 +58,7 @@ jobs:
           sudo mv /var/lib/dpkg/info /var/lib/dpkg/info.bak
           sudo mkdir /var/lib/dpkg/info
           sudo -E apt-get update
-          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libtinfo5
+          sudo -E apt-get -y install curl build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libtinfo5
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
 
@@ -70,286 +70,18 @@ jobs:
           # ln -s /mnt/openwrt/dl ./dl
           # ln -s /mnt/openwrt/feeds ./feeds
           # ln -s /mnt/openwrt/staging_dir ./staging_dir
-
-          df -h
+          echo "磁盘空间使用情况："
+          df -lTh
 
       - name: Update feeds
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Generate configuration file
+      - name: Download configuration file
         run: |
           rm -f ./.config*
-          touch ./.config
-
-          #
-          # 在 cat >> .config <<EOF 到 EOF 之间粘贴你的编译配置, 需注意缩进关系
-          # 例如:
-
-          cat >> .config <<EOF
-            CONFIG_TARGET_IMAGES_GZIP=y
-            # CONFIG_VDI_IMAGES is not set
-            # CONFIG_VHDX_IMAGES is not set
-            # CONFIG_VMDK_IMAGES is not set
-            CONFIG_KERNEL_BUILD_USER="LEDE-CI"
-            CONFIG_KERNEL_BUILD_DOMAIN="Azure"
-            CONFIG_TARGET_x86=y
-            CONFIG_TARGET_x86_64=y
-            CONFIG_TARGET_x86_64_DEVICE_generic=y
-            CONFIG_TARGET_PROFILE="DEVICE_generic"
-            CONFIG_TARGET_ARCH_PACKAGES="x86_64"
-            # CONFIG_LINUX_5_10=y
-
-          # Target Images
-            # CONFIG_TARGET_ROOTFS_INITRAMFS is not set
-            CONFIG_EXTERNAL_CPIO=""
-
-          # Image Options
-            # CONFIG_VMDK_IMAGES is not set
-            CONFIG_TARGET_KERNEL_PARTSIZE=16
-            CONFIG_TARGET_ROOTFS_PARTSIZE=256
-            CONFIG_TARGET_ROOTFS_PARTNAME=""
-            CONFIG_TARGET_ROOTFS_PERSIST_VAR=y
-          
-          # Extra packages
-            # CONFIG_PACKAGE_automount is not set
-            CONFIG_PACKAGE_ipv6helper=y
-
-          # Firmware
-            CONFIG_PACKAGE_iwlwifi-firmware-iwl6000g2=y
-            CONFIG_PACKAGE_iwlwifi-firmware-iwl6000g2a=y
-            CONFIG_PACKAGE_iwlwifi-firmware-iwl6000g2b=y
-            CONFIG_PACKAGE_iwlwifi-firmware-iwl7265=y
-            CONFIG_PACKAGE_iwlwifi-firmware-iwl7265d=y
-            CONFIG_PACKAGE_rtl8822ce-firmware=y
-
-          # Block Devices
-            CONFIG_PACKAGE_kmod-ata-ahci=y
-            CONFIG_PACKAGE_kmod-loop=y
-            CONFIG_PACKAGE_kmod-scsi-cdrom=y
-          
-          # Filesystems
-            CONFIG_PACKAGE_kmod-fs-btrfs=y
-            CONFIG_PACKAGE_kmod-fs-exfat=y
-            CONFIG_PACKAGE_kmod-fs-ext4=y
-            CONFIG_PACKAGE_kmod-fs-f2fs=y
-            CONFIG_PACKAGE_kmod-fs-isofs=y
-            CONFIG_PACKAGE_kmod-fs-hfsplus=y
-            CONFIG_PACKAGE_kmod-fs-msdos=y
-            CONFIG_PACKAGE_kmod-fs-ntfs=y
-            CONFIG_PACKAGE_kmod-fs-ntfs3=y
-            CONFIG_PACKAGE_kmod-fs-squashfs=y
-            CONFIG_PACKAGE_kmod-fs-udf=y
-            CONFIG_PACKAGE_kmod-fs-vfat=y
-
-          # Native Language Support
-            CONFIG_PACKAGE_kmod-nls-cp936=y
-            CONFIG_PACKAGE_kmod-nls-cp950=y
-
-          # Network Devices
-            CONFIG_PACKAGE_kmod-e1000=y
-            CONFIG_PACKAGE_kmod-e1000e=y
-            CONFIG_PACKAGE_kmod-vmxnet3=y
-
-          # USB Support
-            CONFIG_PACKAGE_kmod-usb-net-rtl8150=y
-            CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
-            CONFIG_PACKAGE_kmod-usb-net-rtl8152-vendor=m
-            CONFIG_PACKAGE_kmod-usb2=y
-            CONFIG_PACKAGE_kmod-usb3=y
-
-          # Virtualization
-            CONFIG_PACKAGE_kmod-kvm-intel=y
-            CONFIG_PACKAGE_kmod-kvm-x86=y
-
-          # Wireless Drivers
-            CONFIG_PACKAGE_kmod-iwlwifi=y
-            CONFIG_PACKAGE_kmod-rtw88=y
-
-          # LuCI
-            CONFIG_PACKAGE_luci=y
-            CONFIG_PACKAGE_luci-base=y
-            CONFIG_LUCI_LANG_zh-cn=y
-            CONFIG_PACKAGE_luci-compat=y
-            CONFIG_PACKAGE_luci-mod-admin-full=y
-            CONFIG_PACKAGE_luci-newapi=y
-
-          # Applications
-            # CONFIG_PACKAGE_luci-app-accesscontrol=y
-            CONFIG_PACKAGE_luci-app-adblock=y
-            CONFIG_PACKAGE_luci-app-adbyby-plus=y
-            CONFIG_PACKAGE_luci-app-advanced-reboot=y
-            CONFIG_PACKAGE_luci-app-ahcp=y
-            CONFIG_PACKAGE_luci-app-airplay2=y
-            CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
-            CONFIG_PACKAGE_luci-app-amule=y
-            CONFIG_PACKAGE_luci-app-aria2=y
-            # CONFIG_PACKAGE_luci-app-arpbind=y
-            # CONFIG_PACKAGE_luci-app-asterisk is not set
-            # CONFIG_PACKAGE_luci-app-attendedsysupgrade is not set
-            CONFIG_PACKAGE_luci-app-autoreboot=y
-            CONFIG_PACKAGE_luci-app-baidupcs-web=y
-            CONFIG_PACKAGE_luci-app-bcp38=y
-            # CONFIG_PACKAGE_luci-app-bird1-ipv4 is not set
-            # CONFIG_PACKAGE_luci-app-bird1-ipv6 is not set
-            # CONFIG_PACKAGE_luci-app-bmx6 is not set
-            # CONFIG_PACKAGE_luci-app-cifs-mount is not set
-            # CONFIG_PACKAGE_luci-app-cifsd is not set
-            # CONFIG_PACKAGE_luci-app-cjdns is not set
-            CONFIG_PACKAGE_luci-app-clamav=y
-            CONFIG_PACKAGE_luci-app-commands=y
-            # CONFIG_PACKAGE_luci-app-cshark is not set
-            # CONFIG_PACKAGE_luci-app-dawn is not set
-            CONFIG_PACKAGE_luci-app-ddns=y
-            # CONFIG_PACKAGE_luci-app-diag-core is not set
-            # CONFIG_PACKAGE_luci-app-diskman=y
-            # CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs=y
-            # CONFIG_PACKAGE_luci-app-diskman_INCLUDE_lsblk=y
-            # CONFIG_PACKAGE_luci-app-diskman_INCLUDE_mdadm=y
-            # CONFIG_PACKAGE_luci-app-diskman_INCLUDE_kmod_md_raid456=y
-            # CONFIG_PACKAGE_luci-app-diskman_INCLUDE_kmod_md_linear=y
-            CONFIG_PACKAGE_luci-app-dnscrypt-proxy=y
-            CONFIG_PACKAGE_luci-app-dnsforwarder=y
-            # CONFIG_PACKAGE_luci-app-docker=y
-            # CONFIG_PACKAGE_luci-app-dump1090=y
-            # CONFIG_PACKAGE_luci-app-dynapoint=y
-            # CONFIG_PACKAGE_luci-app-e2guardian=y
-            # CONFIG_PACKAGE_luci-app-easymesh is not set
-            # CONFIG_PACKAGE_luci-app-familycloud=y
-            # CONFIG_PACKAGE_luci-app-filetransfer=y
-            CONFIG_PACKAGE_luci-app-firewall=y
-            # CONFIG_PACKAGE_luci-app-frpc is not set
-            # CONFIG_PACKAGE_luci-app-frps is not set
-            # CONFIG_PACKAGE_luci-app-fwknopd=y
-            CONFIG_PACKAGE_luci-app-go-aliyundrive-webdav=y
-            # CONFIG_PACKAGE_luci-app-guest-wifi=y
-            # CONFIG_PACKAGE_luci-app-haproxy-tcp=y
-            CONFIG_PACKAGE_luci-app-hd-idle=y
-            # CONFIG_PACKAGE_luci-app-hnet is not set
-            # CONFIG_PACKAGE_luci-app-https-dns-proxy=y
-            # CONFIG_PACKAGE_luci-app-ipsec-vpnd=y
-            CONFIG_PACKAGE_luci-app-jd-dailybonus=y
-            # CONFIG_PACKAGE_luci-app-kodexplorer=y
-            # CONFIG_PACKAGE_luci-app-lxc=y
-            CONFIG_PACKAGE_luci-app-minidlna=y
-            CONFIG_PACKAGE_luci-app-mjpg-streamer=y
-            CONFIG_PACKAGE_luci-app-music-remote-center=y
-            CONFIG_PACKAGE_luci-app-mwan3=y
-            CONFIG_PACKAGE_luci-app-mwan3helper=y
-            # CONFIG_PACKAGE_luci-app-n2n_v2=y
-            CONFIG_PACKAGE_luci-app-netdata=y
-            CONFIG_PACKAGE_luci-app-nfs=y
-            CONFIG_PACKAGE_luci-app-nft-qos=y
-            # CONFIG_PACKAGE_luci-app-nlbwmon=y
-            # CONFIG_PACKAGE_luci-app-noddos is not set
-            CONFIG_PACKAGE_luci-app-nps=y
-            # CONFIG_PACKAGE_luci-app-ntpc=y
-            # CONFIG_PACKAGE_luci-app-ocserv=y
-            # CONFIG_PACKAGE_luci-app-olsr is not set
-            # CONFIG_PACKAGE_luci-app-olsr-services is not set
-            # CONFIG_PACKAGE_luci-app-olsr-viz is not set
-            CONFIG_PACKAGE_luci-app-openvpn=y
-            CONFIG_PACKAGE_luci-app-openvpn-server=y
-            # CONFIG_PACKAGE_luci-app-p910nd=y
-            # CONFIG_PACKAGE_luci-app-pagekitec=y
-            # CONFIG_PACKAGE_luci-app-polipo=y
-            # CONFIG_PACKAGE_luci-app-pppoe-relay=y
-            CONFIG_PACKAGE_luci-app-pptp-server=y
-            # CONFIG_PACKAGE_luci-app-privoxy=y
-            # CONFIG_PACKAGE_luci-app-ps3netsrv=y
-            # CONFIG_PACKAGE_luci-app-pushbot=y
-            CONFIG_PACKAGE_luci-app-qbittorrent=y
-            CONFIG_PACKAGE_luci-app-qbittorrent_static=y
-            # CONFIG_PACKAGE_luci-app-qbittorrent_dynamic is not set
-            CONFIG_PACKAGE_luci-app-qos=y
-            # CONFIG_PACKAGE_luci-app-radicale=y
-            CONFIG_PACKAGE_luci-app-ramfree=y
-            CONFIG_PACKAGE_luci-app-rclone=y
-            CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-webui=y
-            CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-ng=y
-            # CONFIG_PACKAGE_luci-app-rp-pppoe-server is not set
-            CONFIG_PACKAGE_luci-app-samba=y
-            # CONFIG_PACKAGE_luci-app-samba4 is not set
-            # CONFIG_PACKAGE_luci-app-serverchan=y
-            CONFIG_PACKAGE_luci-app-shadowsocks-libev=y
-            CONFIG_PACKAGE_luci-app-shairplay=y
-            # CONFIG_PACKAGE_luci-app-siitwizard is not set
-            CONFIG_PACKAGE_luci-app-simple-adblock=y
-            # CONFIG_PACKAGE_luci-app-softethervpn=y
-            # CONFIG_PACKAGE_luci-app-splash is not set
-            # CONFIG_PACKAGE_luci-app-sqm=y
-            # CONFIG_PACKAGE_luci-app-squid=y
-            CONFIG_PACKAGE_luci-app-ssrserver-python=y
-            CONFIG_PACKAGE_luci-app-statistics=y
-            # CONFIG_PACKAGE_luci-app-syncdial=y
-            # CONFIG_PACKAGE_luci-app-tinyproxy=y
-            CONFIG_PACKAGE_luci-app-transmission=y
-            # CONFIG_PACKAGE_luci-app-travelmate=y
-            # CONFIG_PACKAGE_luci-app-ttyd=y
-            CONFIG_PACKAGE_luci-app-turboacc=y
-            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE=y
-            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_BBR_CCA=y
-            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_DNSFORWARDER=y
-            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_DNSPROXY=y
-            CONFIG_PACKAGE_luci-app-udpxy=y
-            # CONFIG_PACKAGE_luci-app-uhttpd=y
-            CONFIG_PACKAGE_luci-app-unblockmusic=y
-            CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_Go=y
-            CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_NodeJS=y
-            CONFIG_PACKAGE_luci-app-unbound=y
-            CONFIG_PACKAGE_luci-app-upnp=y
-            # CONFIG_PACKAGE_luci-app-usb-printer=y
-            # CONFIG_PACKAGE_luci-app-uugamebooster=y
-            # CONFIG_PACKAGE_luci-app-v2ray-server=y
-            # CONFIG_PACKAGE_luci-app-verysync=y
-            CONFIG_PACKAGE_luci-app-vlmcsd=y
-            # CONFIG_PACKAGE_luci-app-vnstat is not set
-            # CONFIG_PACKAGE_luci-app-vpnbypass=y
-            CONFIG_PACKAGE_luci-app-vsftpd=y
-            # CONFIG_PACKAGE_luci-app-watchcat=y
-            CONFIG_PACKAGE_luci-app-webadmin=y
-            # CONFIG_PACKAGE_luci-app-wifischedule=y
-            # CONFIG_PACKAGE_luci-app-wireguard is not set
-            # CONFIG_PACKAGE_luci-app-wol=y
-            # CONFIG_PACKAGE_luci-app-wrtbwmon=y
-            # CONFIG_PACKAGE_luci-app-xlnetacc=y
-            # CONFIG_PACKAGE_luci-app-zerotier=y
-
-          # Themes
-            CONFIG_PACKAGE_luci-theme-argon=y
-            CONFIG_PACKAGE_luci-theme-argon-mod=y
-            CONFIG_PACKAGE_luci-theme-bootstrap=y
-            CONFIG_PACKAGE_luci-theme-material=y
-            CONFIG_PACKAGE_luci-theme-netgear=y
-
-          # DPDK
-            # CONFIG_GDB is not set
-            CONFIG_USE_GLIBC=y
-            CONFIG_SSP_SUPPORT=y
-            CONFIG_BINUTILS_VERSION_2_34=y
-            CONFIG_BINUTILS_VERSION="2.34"
-            CONFIG_GCC_VERSION="8.4.0"
-            # CONFIG_GCC_USE_IREMAP is not set
-            CONFIG_LIBC="gCONFIG_LIBC="glibc"libc"
-            CONFIG_TARGET_SUFFIX="gnu"
-            # CONFIG_IB is not set
-            CONFIG_SDK=y
-            CONFIG_VFIO_IOMMU_TYPE1=y
-            CONFIG_VFIO_VIRQFD=y
-            CONFIG_VFIO=y
-            CONFIG_VFIO_NOIOMMU=y
-            CONFIG_VFIO_PCI=y
-            CONFIG_VFIO_PCI_MMAP=y
-            CONFIG_HUGETLBFS=y
-            CONFIG_HUGETLB_PAGE=y
-            CONFIG_PROC_PAGE_MONITOR=y
-          EOF
-
-          #
-          # ===============================================================
-          # 
-          sed -i 's/^[ \t]*//g' ./.config
+          curl -o ./.config https://raw.githubusercontent.com/zzasa/OpenWrt-CI/master/.github/workflows/lede-config
 
       - name: Show custom configuration
         run: |
@@ -364,7 +96,8 @@ jobs:
         run: |
           make download -j8 || make download -j1 V=s
           rm -rf $(find ./dl/ -size -1024c)
-          df -h
+          echo "磁盘空间使用情况："
+          df -lTh
 
       - name: Compile firmware
         run: |
@@ -372,7 +105,8 @@ jobs:
           echo "======================="
           echo "Space usage:"
           echo "======================="
-          df -h
+          echo "磁盘空间使用情况："
+          df -lTh
           echo "======================="
           du -h ./ --max-depth=1
           du -h /mnt/openwrt/ --max-depth=1 || true
