@@ -7,7 +7,7 @@
 # <https://github.com/KFERMercer/OpenWrt-CI> 
 #
 
-name: LEDE-CI
+name: LEDE-CI-x86_64
 
 on:
   push:
@@ -70,7 +70,9 @@ jobs:
           # ln -s /mnt/openwrt/dl ./dl
           # ln -s /mnt/openwrt/feeds ./feeds
           # ln -s /mnt/openwrt/staging_dir ./staging_dir
-          echo "磁盘空间使用情况："
+
+      - name: Disk Usage
+        run: |
           df -lTh
 
       - name: Update feeds
@@ -96,14 +98,17 @@ jobs:
         run: |
           make download -j8 || make download -j1 V=s
           rm -rf $(find ./dl/ -size -1024c)
-          echo "磁盘空间使用情况："
+
+      - name: Disk Usage
+        run: |
           df -lTh
 
       - name: Compile firmware
         run: |
           make -j$(nproc) || make -j1 V=s
-          echo "======================="
-          echo "Space usage:"
+          
+      - name: Disk Usage
+        run: |
           echo "======================="
           echo "磁盘空间使用情况："
           df -lTh
