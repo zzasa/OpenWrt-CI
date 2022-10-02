@@ -110,7 +110,7 @@ jobs:
       - name: Disk Usage
         run: |
           echo "======================="
-          echo "磁盘空间使用情况："
+          echo "磁盘空间使用情况： "
           df -lTh
           echo "======================="
           du -h ./ --max-depth=1
