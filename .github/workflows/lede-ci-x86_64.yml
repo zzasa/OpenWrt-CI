@@ -1,27 +1,25 @@
 #
 # This is free software, lisence use MIT.
-# 
+#
 # Copyright (C) 2019 P3TERX <https://p3terx.com>
 # Copyright (C) 2020 KFERMercer <KFER.Mercer@gmail.com>
 #
-# <https://github.com/KFERMercer/OpenWrt-CI> 
+# <https://github.com/KFERMercer/OpenWrt-CI>
 #
 
 name: LEDE-CI-x86_64
 
 on:
   push:
-    branches: 
-      - master1
+    branches:
+      - master
   # schedule:
   #   - cron: 0 20 * * *
   release:
     types: [published]
 
 jobs:
-
   build_openwrt:
-
     name: Build LEDE firmware
 
     runs-on: ubuntu-latest
@@ -29,7 +27,6 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -38,12 +35,13 @@ jobs:
 
       - name: List Repo Files
         run: |
-          echo "源文件列表······"
+          echo "=======================源文件列表：======================="
           ls -lth
           # sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.15/g' ./target/linux/x86/Makefile
-          echo "内核版本结果如下："
+          echo "=======================内核版本结果如下：======================="
           cat -n ./target/linux/x86/Makefile
-
+          echo "=======================当前软件包占用排行榜：======================="
+          sudo dpkg-query -W --showformat='${Installed-Size} ${Package} ${Status}\n'|grep -v deinstall|sort -n -r|awk '{print $1" "$2}' | head -n 40
       - name: Space cleanup
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -73,6 +71,7 @@ jobs:
 
       - name: Disk Usage
         run: |
+          echo "=======================当前磁盘占用======================="
           df -lTh
 
       - name: Update feeds
@@ -101,16 +100,17 @@ jobs:
 
       - name: Disk Usage
         run: |
+          echo "=======================当前磁盘占用======================="
           df -lTh
 
       - name: Compile firmware
         run: |
           make -j$(nproc) || make -j1 V=s
-          
+
       - name: Disk Usage
         run: |
           echo "======================="
-          echo "磁盘空间使用情况： "
+          echo "=======================当前磁盘占用======================="
           df -lTh
           echo "======================="
           du -h ./ --max-depth=1
@@ -120,33 +120,16 @@ jobs:
         run: |
           echo "=======================编译后的目标文件列表如下：======================="
           tree ./bin/targets/
-          echo "=======================显示完成======================================="
-          mkdir -p ./artifact/firmware
-          mkdir -p ./artifact/package
-          mkdir -p ./artifact/buildinfo
-          rm -rf $(find ./bin/targets/ -type d -name "packages")
-          cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
-          find ./bin/targets/ -name "*sysupgrade*bin*" | xargs -i mv -f {} ./artifact/firmware/
-          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
-          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
-
-      - name: Deliver buildinfo
-        uses: actions/upload-artifact@v2
-        with:
-          name: LEDE_buildinfo
-          path: ./artifact/buildinfo/
-
-      - name: Deliver package
-        uses: actions/upload-artifact@v2
-        with:
-          name: LEDE_package
-          path: ./artifact/package/
+          echo "=======================开始压缩固件======================================="
+          tar Jcvf firmware.tar.xz ./bin/targets/
+          echo "=======================压缩固件结果======================================="
+          ls -lth firmware.tar.xz
 
       - name: Deliver firmware
         uses: actions/upload-artifact@v2
         with:
           name: LEDE_firmware
-          path: ./bin/targets/
+          path: ./firmware.tar.xz
 
       - name: Upload release asset
         if: github.event == 'release'
