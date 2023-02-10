@@ -42,7 +42,7 @@ jobs:
           cat -n ./target/linux/x86/Makefile
           echo "=======================当前软件包占用排行榜：======================="
           sudo dpkg-query -W --showformat='${Installed-Size} ${Package} ${Status}\n'|grep -v deinstall|sort -n -r|awk '{print $1" "$2}' | head -n 40
-      - name: Space cleanup
+      - name: 空间清理
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -52,8 +52,18 @@ jobs:
           docker images
           echo "=======================docker容器占用======================="
           docker ps -a
-          sudo -E apt -y upgrade
-          sudo -E sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+          docker rmi `docker images -q`
+          echo "=======================docker容器占用======================="
+          sudo apt-get -y remove azure* microsoft* dotnet* temurin-*-jdk google* llvm* firefox* powershell mysql* mono* libllvm* snapd* moby* libclang* moby* mecab*
+      - name: 安装依赖包
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          echo "=======================统计文件夹占用======================="
+          sudo du --max-depth=4 --exclude=\/mnt / | grep "^[0-9]\{5,\}" | sort -k 1 -r -n
+          echo "=======================统计文件夹占用======================="
+          sudo -E apt-get -y upgrade
+          sudo -E sudo apt-get install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
             bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib \
             git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
             libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz \
