@@ -12,7 +12,7 @@ name: LEDE-CI-x86_64
 on:
   push:
     branches:
-      - master
+      - master1
   # schedule:
   #   - cron: 0 20 * * *
   release:
@@ -42,7 +42,7 @@ jobs:
           cat -n ./target/linux/x86/Makefile
           echo "=======================当前软件包占用排行榜：======================="
           sudo dpkg-query -W --showformat='${Installed-Size} ${Package} ${Status}\n'|grep -v deinstall|sort -n -r|awk '{print $1" "$2}' | head -n 40
-      - name: 空间清理
+      - name: 包清理
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -54,14 +54,28 @@ jobs:
           docker ps -a
           docker rmi `docker images -q`
           echo "=======================docker容器占用======================="
-          sudo apt-get -y remove azure* microsoft* dotnet* temurin-*-jdk google* llvm* firefox* powershell mysql* mono* libllvm* snapd* moby* libclang* moby* mecab*
+          sudo apt-get -y remove android* azure* microsoft* dotnet* temurin-*-jdk google* llvm* firefox* powershell mysql* mono* libllvm* snapd* moby* libclang* moby* mecab*
+      - name: 文件清理
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          echo "=======================清理前当前磁盘占用======================="
+          df -lTh
+          echo "=======================开始统计文件夹占用======================="
+          sudo du --max-depth=4 --exclude=\/mnt / | grep "^[0-9]\{5,\}" | sort -k 1 -r -n
+          echo "=======================开始清理文件夹======================="
+          sudo -E rm -rf /usr/local/lib/android
+          sudo -E rm -rf /opt/hostedtoolcache
+          sudo -E rm -rf /usr/local/share/powershell
+          sudo -E rm -rf /usr/local/lib/node_modules
+          sudo -E rm -rf /home/linuxbrew
+          echo "=======================清理后当前磁盘占用======================="
+          df -lTh
       - name: 安装依赖包
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          echo "=======================统计文件夹占用======================="
-          sudo du --max-depth=4 --exclude=\/mnt / | grep "^[0-9]\{5,\}" | sort -k 1 -r -n
-          echo "=======================统计文件夹占用======================="
+          echo "=======================开始安装依赖包======================="
           sudo -E apt-get -y upgrade
           sudo -E sudo apt-get install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
             bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib \
@@ -69,8 +83,6 @@ jobs:
             libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz \
             mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip libpython3-dev qemu-utils \
             rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-      - name: Disk Usage
-        run: |
           echo "=======================当前磁盘占用======================="
           df -lTh
 
@@ -113,8 +125,7 @@ jobs:
           echo "=======================当前磁盘占用======================="
           df -lTh
           echo "======================="
-          du -h ./ --max-depth=1
-          du -h /mnt/openwrt/ --max-depth=1 || true
+          du -h ./ --max-depth=3
 
       - name: Prepare artifact
         run: |
