@@ -1,27 +1,25 @@
 #
 # This is free software, lisence use MIT.
-# 
+#
 # Copyright (C) 2019 P3TERX <https://p3terx.com>
 # Copyright (C) 2020 KFERMercer <KFER.Mercer@gmail.com>
 #
-# <https://github.com/KFERMercer/OpenWrt-CI> 
+# <https://github.com/KFERMercer/OpenWrt-CI>
 #
 
 name: LEDE-CI-HC5761
 
 on:
   push:
-    branches: 
-      - master1
+    branches:
+      - master
   # schedule:
   #   - cron: 0 20 * * *
   release:
     types: [published]
 
 jobs:
-
   build_openwrt:
-
     name: Build LEDE firmware
 
     runs-on: ubuntu-latest
@@ -29,7 +27,6 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -38,192 +35,66 @@ jobs:
 
       - name: List Repo Files
         run: |
-          echo "源文件列表······"
+          echo "=======================源文件列表：======================="
           ls -lth
-          # sed -i 's/KERNEL_PATCHVER:=5.4/KERNEL_PATCHVER:=5.10/g' ./target/linux/ramips/Makefile
-          echo "更改内核版本结果如下："
-          cat -n ./target/linux/ramips/Makefile
-
-      - name: Space cleanup
+          # sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.15/g' ./target/linux/x86/Makefile
+          echo "=======================内核版本结果如下：======================="
+          cat -n ./target/linux/x86/Makefile
+          echo "=======================当前软件包占用排行榜：======================="
+          sudo dpkg-query -W --showformat='${Installed-Size} ${Package} ${Status}\n'|grep -v deinstall|sort -n -r|awk '{print $1" "$2}' | head -n 40
+      - name: 包清理
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          echo "=======================当前磁盘占用======================="
+          df -lTh
+          echo "=======================docker镜像占用======================="
+          docker images
+          echo "=======================docker容器占用======================="
+          docker ps -a
           docker rmi `docker images -q`
-
-          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
-          # sudo dpkg -r mysql*
-          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
-          # sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* php* android*
-          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-          sudo mv /var/lib/dpkg/info /var/lib/dpkg/info.bak
-          sudo mkdir /var/lib/dpkg/info
-          sudo -E apt-get update
-          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libtinfo5
-          sudo -E apt-get -y autoremove --purge
-          sudo -E apt-get clean
-
-          # sudo mkdir -p -m 777 /mnt/openwrt/bin /mnt/openwrt/build_dir/host /mnt/openwrt/build_dir/hostpkg /mnt/openwrt/dl /mnt/openwrt/feeds /mnt/openwrt/staging_dir
-          # ln -s /mnt/openwrt/bin ./bin
-          # mkdir -p ./build_dir
-          # ln -s -f /mnt/openwrt/build_dir/host ./build_dir/host
-          # ln -s -f /mnt/openwrt/build_dir/hostpkg ./build_dir/hostpkg
-          # ln -s /mnt/openwrt/dl ./dl
-          # ln -s /mnt/openwrt/feeds ./feeds
-          # ln -s /mnt/openwrt/staging_dir ./staging_dir
-
-          df -h
+          echo "=======================docker容器占用======================="
+          sudo apt-get -y remove android* azure* microsoft* dotnet* temurin-*-jdk google* llvm* firefox* powershell mysql* mono* libllvm* snapd* moby* libclang* moby* mecab*
+      - name: 文件清理
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          echo "=======================清理前当前磁盘占用======================="
+          df -lTh
+          echo "=======================开始统计文件夹占用======================="
+          sudo du --max-depth=4 --exclude=\/mnt / | grep "^[0-9]\{5,\}" | sort -k 1 -r -n
+          echo "=======================开始清理文件夹======================="
+          sudo -E rm -rf /usr/local/lib/android
+          sudo -E rm -rf /opt/hostedtoolcache
+          sudo -E rm -rf /usr/local/share/powershell
+          sudo -E rm -rf /usr/local/lib/node_modules
+          sudo -E rm -rf /home/linuxbrew
+          echo "=======================清理后当前磁盘占用======================="
+          df -lTh
+      - name: 安装依赖包
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          echo "=======================开始安装依赖包======================="
+          sudo -E apt-get -y upgrade
+          sudo -E sudo apt-get install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+            bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib \
+            git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
+            libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz \
+            mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip libpython3-dev qemu-utils \
+            rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+          echo "=======================当前磁盘占用======================="
+          df -lTh
 
       - name: Update feeds
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Generate configuration file
+      - name: Download configuration file
         run: |
           rm -f ./.config*
-          touch ./.config
-
-          #
-          # 在 cat >> .config <<EOF 到 EOF 之间粘贴你的编译配置, 需注意缩进关系
-          # 例如:
-
-          cat >> .config <<EOF
-            CONFIG_MODULES=y
-            CONFIG_HAVE_DOT_CONFIG=y
-            CONFIG_TARGET_ramips=y
-            CONFIG_TARGET_ramips_mt7620=y
-            CONFIG_TARGET_ramips_mt7620_DEVICE_hiwifi_hc5761=y
-            CONFIG_HAS_SUBTARGETS=y
-            CONFIG_HAS_DEVICES=y
-            CONFIG_TARGET_BOARD="ramips"
-            CONFIG_TARGET_SUBTARGET="mt7620"
-            CONFIG_TARGET_PROFILE="DEVICE_hiwifi_hc5761"
-            CONFIG_TARGET_ARCH_PACKAGES="mipsel_24kc"
-            CONFIG_DEFAULT_TARGET_OPTIMIZATION="-Os -pipe -mno-branch-likely -mips32r2 -mtune=24kc"
-            CONFIG_CPU_TYPE="24kc"
-            # CONFIG_LINUX_5_10=y
-            CONFIG_AUDIO_SUPPORT=y
-            CONFIG_GPIO_SUPPORT=y
-            CONFIG_PCI_SUPPORT=y
-            CONFIG_USB_SUPPORT=y
-            CONFIG_USES_DEVICETREE=y
-            CONFIG_USES_INITRAMFS=y
-            CONFIG_USES_SQUASHFS=y
-            CONFIG_HAS_MIPS16=y
-            CONFIG_NAND_SUPPORT=y
-            CONFIG_mipsel=y
-            CONFIG_ARCH="mipsel"
-
-          # Target Images
-            CONFIG_TARGET_ROOTFS_INITRAMFS=y
-            CONFIG_TARGET_INITRAMFS_COMPRESSION_LZMA=y
-            CONFIG_EXTERNAL_CPIO=""
-            CONFIG_TARGET_ROOTFS_SQUASHFS=y
-            CONFIG_TARGET_SQUASHFS_BLOCK_SIZE=1024
-            CONFIG_TARGET_UBIFS_FREE_SPACE_FIXUP=y
-            CONFIG_TARGET_UBIFS_JOURNAL_SIZE=""
-            CONFIG_SIGNED_PACKAGES=y
-            CONFIG_SIGNATURE_CHECK=y
-            CONFIG_SHADOW_PASSWORDS=y
-
-          # Extra packages
-            CONFIG_PACKAGE_autosamba=y
-            CONFIG_PACKAGE_ipv6helper=y
-
-          # Firmware
-            CONFIG_PACKAGE_wireless-regdb=y
-          
-          # Filesystems
-            CONFIG_PACKAGE_kmod-fs-exfat=y
-            CONFIG_PACKAGE_kmod-fs-ext4=y
-            CONFIG_PACKAGE_kmod-fs-f2fs=y
-            CONFIG_PACKAGE_kmod-fs-ntfs=y
-            CONFIG_PACKAGE_kmod-fs-ntfs3-oot=y
-            CONFIG_PACKAGE_kmod-fs-vfat=y
-
-          # Native Language Support
-            CONFIG_PACKAGE_kmod-nls-base=y
-            CONFIG_PACKAGE_kmod-nls-cp437=y
-            CONFIG_PACKAGE_kmod-nls-iso8859-1=y
-            CONFIG_PACKAGE_kmod-nls-utf8=y
-
-          # Network Devices
-            CONFIG_PACKAGE_kmod-macvlan=y
-
-          # USB Support
-            CONFIG_PACKAGE_kmod-usb-core=y
-            CONFIG_PACKAGE_kmod-usb-ehci=y
-            CONFIG_PACKAGE_kmod-usb-ledtrig-usbport=y
-            CONFIG_PACKAGE_kmod-usb-ohci=y
-            CONFIG_PACKAGE_kmod-usb2=y
-
-          # Wireless Drivers
-            CONFIG_PACKAGE_kmod-cfg80211=y
-            CONFIG_PACKAGE_kmod-mac80211=y
-            CONFIG_PACKAGE_MAC80211_DEBUGFS=y
-            CONFIG_PACKAGE_MAC80211_MESH=y
-            CONFIG_PACKAGE_kmod-mt76-core=y
-            CONFIG_PACKAGE_kmod-mt76x0-common=y
-            CONFIG_PACKAGE_kmod-mt76x02-common=y
-            CONFIG_PACKAGE_kmod-mt76x0e=y
-            CONFIG_PACKAGE_kmod-rt2800-lib=y
-            CONFIG_PACKAGE_kmod-rt2800-mmio=y
-            CONFIG_PACKAGE_kmod-rt2800-soc=y
-            CONFIG_PACKAGE_kmod-rt2x00-lib=y
-            CONFIG_PACKAGE_kmod-rt2x00-mmio=y
-
-          # LuCI
-            CONFIG_PACKAGE_luci=y
-            CONFIG_PACKAGE_luci-base=y
-            CONFIG_LUCI_LANG_zh-cn=y
-            CONFIG_PACKAGE_luci-compat=y
-            CONFIG_PACKAGE_luci-mod-admin-full=y
-            CONFIG_PACKAGE_luci-newapi=y
-
-          # Applications
-            CONFIG_PACKAGE_luci-app-accesscontrol=y
-            CONFIG_PACKAGE_luci-app-arpbind=y
-            CONFIG_PACKAGE_luci-app-autoreboot=y
-            CONFIG_PACKAGE_luci-app-ddns=y
-            CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs=y
-            CONFIG_PACKAGE_luci-app-diskman_INCLUDE_lsblk=y
-            CONFIG_PACKAGE_luci-app-filetransfer=y
-            CONFIG_PACKAGE_luci-app-firewall=y
-            CONFIG_PACKAGE_luci-app-https-dns-proxy=y
-            CONFIG_PACKAGE_luci-app-mtwifi=y
-            CONFIG_PACKAGE_luci-app-nlbwmon=y
-            CONFIG_PACKAGE_luci-app-qbittorrent_dynamic=y
-            CONFIG_PACKAGE_luci-app-ramfree=y
-            CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-webui=y
-            CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-ng=y
-            CONFIG_PACKAGE_luci-app-samba=y
-
-            # CONFIG_PACKAGE_luci-app-samba4 is not set
-
-            CONFIG_PACKAGE_luci-app-turboacc=y
-            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING=y
-            CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_BBR_CCA=y
-            CONFIG_PACKAGE_luci-app-unblockmusic=y
-            CONFIG_PACKAGE_luci-app-upnp=y
-            CONFIG_PACKAGE_luci-app-vlmcsd=y
-            CONFIG_PACKAGE_luci-app-vsftpd=y
-            CONFIG_PACKAGE_luci-app-wol=y
-
-          # Themes
-            CONFIG_PACKAGE_luci-theme-argon=y
-            CONFIG_PACKAGE_luci-theme-bootstrap=y
-            CONFIG_PACKAGE_luci-theme-material=y
-            CONFIG_PACKAGE_luci-theme-netgear=y
-
-          # Protocols
-            CONFIG_PACKAGE_luci-proto-ipv6=y
-            CONFIG_PACKAGE_luci-proto-ppp=y
-          EOF
-
-          #
-          # ===============================================================
-          # 
-          sed -i 's/^[ \t]*//g' ./.config
+          curl -o ./.config https://raw.githubusercontent.com/zzasa/OpenWrt-CI/master/.github/workflows/hc5761.config
 
       - name: Show custom configuration
         run: |
@@ -238,32 +109,38 @@ jobs:
         run: |
           make download -j8 || make download -j1 V=s
           rm -rf $(find ./dl/ -size -1024c)
-          df -h
+
+      - name: Disk Usage
+        run: |
+          echo "=======================当前磁盘占用======================="
+          df -lTh
 
       - name: Compile firmware
         run: |
           make -j$(nproc) || make -j1 V=s
+
+      - name: Disk Usage
+        run: |
           echo "======================="
-          echo "Space usage:"
+          echo "=======================当前磁盘占用======================="
+          df -lTh
           echo "======================="
-          df -h
-          echo "======================="
-          du -h ./ --max-depth=1
-          du -h /mnt/openwrt/ --max-depth=1 || true
+          du -h ./ --max-depth=3
 
       - name: Prepare artifact
         run: |
           echo "=======================编译后的目标文件列表如下：======================="
           tree ./bin/targets/
-          echo "=======================显示完成======================================="
-          mkdir -p ./artifact/firmware
-          cp -rf ./bin/targets ./artifact/firmware/
+          echo "=======================开始压缩固件======================================="
+          tar Jcvf firmware.tar.xz ./bin/targets/
+          echo "=======================压缩固件结果======================================="
+          ls -lth firmware.tar.xz
 
       - name: Deliver firmware
         uses: actions/upload-artifact@v2
         with:
           name: LEDE_firmware
-          path: ./bin/targets/
+          path: ./firmware.tar.xz
 
       - name: Upload release asset
         if: github.event == 'release'

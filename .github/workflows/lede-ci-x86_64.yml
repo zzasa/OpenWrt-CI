@@ -12,7 +12,7 @@ name: LEDE-CI-x86_64
 on:
   push:
     branches:
-      - master
+      - master1
   # schedule:
   #   - cron: 0 20 * * *
   release:
@@ -94,7 +94,7 @@ jobs:
       - name: Download configuration file
         run: |
           rm -f ./.config*
-          curl -o ./.config https://raw.githubusercontent.com/zzasa/OpenWrt-CI/master/.github/workflows/lede-config
+          curl -o ./.config https://raw.githubusercontent.com/zzasa/OpenWrt-CI/master/.github/workflows/x86.config
 
       - name: Show custom configuration
         run: |
