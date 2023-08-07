@@ -54,6 +54,7 @@ jobs:
           docker ps -a
           docker rmi `docker images -q`
           echo "=======================docker容器占用======================="
+          sudo apt-get -y update
           sudo apt-get -y remove android* azure* microsoft* dotnet* temurin-*-jdk google* llvm* firefox* powershell mysql* mono* libllvm* snapd* moby* libclang* moby* mecab*
       - name: 文件清理
         env:
