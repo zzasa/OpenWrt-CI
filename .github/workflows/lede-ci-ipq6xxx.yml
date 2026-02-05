@@ -20,19 +20,24 @@ on:
 
 jobs:
   build_openwrt:
-    name: Build LEDE firmware
+    name: Build LEDE IPQ60xx Firmware
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
+      - name: 硬件信息
+        run: |
+          echo "=======================当前CPU信息======================="
+          cat /proc/cpuinfo
+          echo "=======================当前内存信息======================="
+          cat /proc/meminfo
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: coolsnowwolf/lede
           ref: master
-
       - name: List Repo Files
         run: |
           echo "=======================源文件列表：======================="
@@ -56,6 +61,19 @@ jobs:
           echo "=======================docker容器占用======================="
           sudo apt-get -y update
           sudo apt-get -y remove android* azure* microsoft* dotnet* temurin-*-jdk google* llvm* firefox* powershell mysql* mono* libllvm* snapd* moby* libclang* moby* mecab*
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: true
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
       - name: 文件清理
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -88,7 +106,13 @@ jobs:
             swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
           echo "=======================当前磁盘占用======================="
           df -lTh
-
+      - name: Apply Patch
+        run: |
+          rm -f ./target/linux/qualcommax/patches-6.12/0600-1-qca-nss-ecm-support-CORE.patch && \
+          curl -o ./target/linux/qualcommax/patches-6.12/0600-1-qca-nss-ecm-support-CORE.patch \
+            https://raw.githubusercontent.com/zzasa/OpenWrt-CI/master/.github/workflows/patch/0600-1-qca-nss-ecm-support-CORE.patch
+          echo "应用qca-nss-ecm-support-CORE补丁结果如下："
+          cat -n ./target/linux/qualcommax/patches-6.12/0600-1-qca-nss-ecm-support-CORE.patch
       - name: Update feeds
         run: |
           ./scripts/feeds update -a
