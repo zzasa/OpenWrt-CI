@@ -47,20 +47,20 @@ jobs:
           cat -n ./target/linux/qualcommax/Makefile
           echo "=======================当前软件包占用排行榜：======================="
           sudo dpkg-query -W --showformat='${Installed-Size} ${Package} ${Status}\n'|grep -v deinstall|sort -n -r|awk '{print $1" "$2}' | head -n 40
-      - name: 包清理
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        run: |
-          echo "=======================当前磁盘占用======================="
-          df -lTh
-          echo "=======================docker镜像占用======================="
-          docker images
-          echo "=======================docker容器占用======================="
-          docker ps -a
-          docker rmi `docker images -q`
-          echo "=======================docker容器占用======================="
-          sudo apt-get -y update
-          sudo apt-get -y remove android* azure* microsoft* dotnet* temurin-*-jdk google* llvm* firefox* powershell mysql* mono* libllvm* snapd* moby* libclang* moby* mecab*
+      # - name: 包清理
+      #   env:
+      #     DEBIAN_FRONTEND: noninteractive
+      #   run: |
+      #     echo "=======================当前磁盘占用======================="
+      #     df -lTh
+      #     echo "=======================docker镜像占用======================="
+      #     docker images
+      #     echo "=======================docker容器占用======================="
+      #     docker ps -a
+      #     docker rmi `docker images -q`
+      #     echo "=======================docker容器占用======================="
+      #     sudo apt-get -y update
+      #     sudo apt-get -y remove android* azure* microsoft* dotnet* temurin-*-jdk google* llvm* firefox* powershell mysql* mono* libllvm* snapd* moby* libclang* moby* mecab*
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
