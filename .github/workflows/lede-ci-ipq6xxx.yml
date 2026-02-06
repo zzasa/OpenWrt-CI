@@ -106,13 +106,6 @@ jobs:
             swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
           echo "=======================当前磁盘占用======================="
           df -lTh
-      - name: Apply Patch
-        run: |
-          rm -f ./target/linux/qualcommax/patches-6.12/0600-1-qca-nss-ecm-support-CORE.patch && \
-          curl -o ./target/linux/qualcommax/patches-6.12/0600-1-qca-nss-ecm-support-CORE.patch \
-            https://raw.githubusercontent.com/zzasa/OpenWrt-CI/master/.github/workflows/patch/0600-1-qca-nss-ecm-support-CORE.patch
-          echo "应用qca-nss-ecm-support-CORE补丁结果如下："
-          cat -n ./target/linux/qualcommax/patches-6.12/0600-1-qca-nss-ecm-support-CORE.patch
       - name: Update feeds
         run: |
           ./scripts/feeds update -a
@@ -143,10 +136,7 @@ jobs:
 
       - name: Compile firmware
         run: |
-          make -j$(nproc) || \
-          (sed -i 's/CACHELINE_ASSERT_GROUP_SIZE(struct net_device, net_device_read_tx, 160);/CACHELINE_ASSERT_GROUP_SIZE(struct net_device, net_device_read_tx, 192);/g' \
-            ./build_dir/target-aarch64_cortex-a53_musl/linux-qualcommax_ipq60xx/linux-6.12.68/net/core/dev.c \
-          && (make -j$(nproc) || make -j1 V=s))
+          make -j$(nproc) || make -j1 V=s
 
       - name: Disk Usage
         run: |
