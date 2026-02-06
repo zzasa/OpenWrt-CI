@@ -121,7 +121,7 @@ jobs:
       - name: Download configuration file
         run: |
           rm -f ./.config*
-          curl -o ./.config https://raw.githubusercontent.com/zzasa/OpenWrt-CI/master/.github/workflows/ipq60xx.config
+          curl -o ./.config https://raw.githubusercontent.com/zzasa/OpenWrt-CI/master/.github/workflows/ipq60xx-mini.config
 
       - name: Show custom configuration
         run: |
