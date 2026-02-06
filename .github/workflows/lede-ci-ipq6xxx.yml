@@ -136,12 +136,6 @@ jobs:
         run: |
           make download -j8 || make download -j1 V=s
           rm -rf $(find ./dl/ -size -1024c)
-      - name: Apply Kernel Patch
-        run: |
-          tree ./build_dir
-          sed -i 's/CACHELINE_ASSERT_GROUP_SIZE(struct net_device, net_device_read_tx, 160);/CACHELINE_ASSERT_GROUP_SIZE(struct net_device, net_device_read_tx, 192);/g' \
-            ./build_dir/target-aarch64_cortex-a53_musl/linux-qualcommax_ipq60xx/linux-6.12.68/net/core/dev.c
-
       - name: Disk Usage
         run: |
           echo "=======================当前磁盘占用======================="
@@ -149,7 +143,10 @@ jobs:
 
       - name: Compile firmware
         run: |
-          make -j$(nproc) || make -j1 V=s
+          make -j$(nproc) || \
+          (sed -i 's/CACHELINE_ASSERT_GROUP_SIZE(struct net_device, net_device_read_tx, 160);/CACHELINE_ASSERT_GROUP_SIZE(struct net_device, net_device_read_tx, 192);/g' \
+            ./build_dir/target-aarch64_cortex-a53_musl/linux-qualcommax_ipq60xx/linux-6.12.68/net/core/dev.c \
+          && (make -j$(nproc) || make -j1 V=s))
 
       - name: Disk Usage
         run: |
