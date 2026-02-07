@@ -37,11 +37,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: coolsnowwolf/lede
-          ref: master
+          ref: 20251001
       - name: List Repo Files
         run: |
-          echo "=======================切换到tag：20251001======================="
-          git checkout 20251001
           echo "=======================当前分支======================="
           git branch -a
           echo "=======================源文件列表：======================="
