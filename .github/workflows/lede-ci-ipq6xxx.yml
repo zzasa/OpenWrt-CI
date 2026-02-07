@@ -40,6 +40,10 @@ jobs:
           ref: master
       - name: List Repo Files
         run: |
+          echo "=======================切换到tag：20251001======================="
+          git checkout 20251001
+          echo "=======================当前分支======================="
+          git branch -a
           echo "=======================源文件列表：======================="
           ls -lth
           # sed -i 's/KERNEL_PATCHVER:=6.6/KERNEL_PATCHVER:=6.12/g' ./target/linux/qualcommax/Makefile
